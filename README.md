@@ -1,3 +1,0 @@
-# objects-website
-
-ajax generation
