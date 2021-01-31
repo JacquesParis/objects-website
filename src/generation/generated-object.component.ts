@@ -1,28 +1,54 @@
 import {values} from 'lodash-es';
-import {AjaxGeneratedResult} from './ajax-generated-result';
 import {AjaxResult} from './ajax-result';
-import {ObjectTreeImpl, ObjectNodeImpl, ObjectNodesService, ObjectTreesService} from '@jacquesparis/objects-client';
+import {IObjectTree, IObjectNode} from '@jacquesparis/objects-model';
 
-export class GenericObjectComponent {
+export abstract class GenericObjectComponent {
   protected ajaxResult: AjaxResult = new AjaxResult();
-  public siteTree: ObjectTreeImpl;
-  public siteNode: ObjectNodeImpl;
-  public templateTree: ObjectTreeImpl;
-  public templateNode: ObjectNodeImpl;
-  public dataTree: ObjectTreeImpl;
-  public dataNode: ObjectNodeImpl;
-  public pageTree: ObjectTreeImpl;
-  public pageNode: ObjectNodeImpl;
-  public siteTemplateTree: ObjectTreeImpl;
-  public siteTemplateNode: ObjectNodeImpl;
+  public siteTree: IObjectTree;
+  public siteNode: IObjectNode;
+  public templateTree: IObjectTree;
+  public templateNode: IObjectNode;
+  public dataTree: IObjectTree;
+  public dataNode: IObjectNode;
+  public pageTree: IObjectTree;
+  public pageNode: IObjectNode;
+  public siteTemplateTree: IObjectTree;
+  public siteTemplateNode: IObjectNode;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public ctrl: any;
-  constructor() {}
 
-  public async loadAjax(dataTree: ObjectTreeImpl, templateTree: ObjectTreeImpl): Promise<string> {
-    const ajaxGeneratedResult: AjaxGeneratedResult = new AjaxGeneratedResult();
+  protected objectTreeService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>};
+  protected objectNodeService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>};
 
-    ajaxGeneratedResult.init(this.siteTree.id, this.pageTree.id, this.dataTree.id, this.templateTree.id);
+  constructor(protected factory: new () => GenericObjectComponent) {}
+  public abstract async init(
+    objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
+    objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
+    siteTreeId: string,
+    pageTreeId?: string,
+    dataTreeId?: string,
+    templateTreeId?: string,
+  ): Promise<void>;
+  public async getObjectTree(treeId: string): Promise<IObjectTree> {
+    return await this.objectTreeService.getCachedOrRemoteObjectById(treeId);
+  }
+
+  public async getObjectNode(nodeId: string): Promise<IObjectNode> {
+    return await this.objectNodeService.getCachedOrRemoteObjectById(nodeId);
+  }
+
+  public abstract async generate(): Promise<AjaxResult>;
+  public async loadAjax(dataTree: IObjectTree, templateTree: IObjectTree): Promise<string> {
+    const ajaxGeneratedResult: GenericObjectComponent = new this.factory();
+
+    await ajaxGeneratedResult.init(
+      this.objectTreeService,
+      this.objectNodeService,
+      this.siteTree.id,
+      this.pageTree.id,
+      dataTree.id,
+      templateTree.id,
+    );
 
     const loadedAjax = await ajaxGeneratedResult.generate();
     for (const scriptId of Object.keys(loadedAjax.headerScripts)) {
@@ -37,11 +63,11 @@ export class GenericObjectComponent {
     return loadedAjax.body;
   }
 
-  public getPageHref(page: ObjectTreeImpl): string {
+  public getPageHref(page: IObjectTree): string {
     return '#/view/' + this.siteTree.id + '/' + (page ? page.treeNode.id : 'default');
   }
 
-  public getAdminHref(page: ObjectTreeImpl): string {
+  public getAdminHref(page: IObjectTree): string {
     return (
       '#/admin/owner/' +
       page.ownerType +
@@ -52,14 +78,6 @@ export class GenericObjectComponent {
       '/' +
       page.namespaceName
     );
-  }
-
-  public async getObjectNode(nodeId: string): Promise<ObjectNodeImpl> {
-    return ObjectNodesService.getService().getCachedOrRemoteObjectById(nodeId);
-  }
-
-  public async getObjectTree(treeId: string): Promise<ObjectTreeImpl> {
-    return ObjectTreesService.getService().getCachedOrRemoteObjectById(treeId);
   }
 
   public getImgSrc(controlValue: {base64?: string; type?: string; uri?: string}): string {

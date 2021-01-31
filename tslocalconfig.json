@@ -1,8 +1,8 @@
 {
-    "compilerOptions": {
-        "outDir": "./out",
-        "sourceMap": true,
-        "moduleResolution": "node",
-        "target": "es5"
-    }
+  "compilerOptions": {
+    "outDir": "./out",
+    "sourceMap": false,
+    "moduleResolution": "node",
+    "target": "es5"
+  }
 }

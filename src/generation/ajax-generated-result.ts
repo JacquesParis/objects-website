@@ -2,12 +2,31 @@ import {parse as cssParse, Rule, stringify as cssStringify, Stylesheet} from 'cs
 import {AjaxResult} from './ajax-result';
 import {GenericObjectComponent} from './generated-object.component';
 import * as Mustache from 'mustache';
+import {IObjectTree, IObjectNode} from '@jacquesparis/objects-model';
 
 export class AjaxGeneratedResult extends GenericObjectComponent {
   constructor() {
-    super();
+    super(AjaxGeneratedResult);
   }
-  public async init(siteTreeId: string, pageTreeId?: string, dataTreeId?: string, templateTreeId?: string) {
+
+  public async init(
+    objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
+    objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
+    siteTreeId: string,
+    pageTreeId?: string,
+    dataTreeId?: string,
+    templateTreeId?: string,
+  ): Promise<void> {
+    this.objectTreeService = objectTreesService;
+    this.objectNodeService = objectNodesService;
+    await this.initObject(siteTreeId, pageTreeId, dataTreeId, templateTreeId);
+  }
+  public async initObject(
+    siteTreeId: string,
+    pageTreeId?: string,
+    dataTreeId?: string,
+    templateTreeId?: string,
+  ): Promise<void> {
     this.siteTree = await this.getObjectTree(siteTreeId);
 
     this.siteNode = await this.getObjectNode(this.siteTree.treeNode.id);
@@ -35,6 +54,7 @@ export class AjaxGeneratedResult extends GenericObjectComponent {
     this.templateTree = await this.getObjectTree(templateTreeId);
 
     this.templateNode = await this.getObjectNode(this.templateTree.treeNode.id);
+    console.log('init', this.dataNode.name, 'with', this.templateNode.name);
   }
 
   public async generate(): Promise<AjaxResult> {

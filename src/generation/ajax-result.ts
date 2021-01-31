@@ -14,12 +14,12 @@ export class AjaxResult {
     return values(this.css);
   }
   public hasHeaderScripts(): boolean {
-    return 0 < Object.keys(this.headerScripts).length;
+    return this.headerScripts && 0 < Object.keys(this.headerScripts).length;
   }
   public hasFooterScripts(): boolean {
-    return 0 < Object.keys(this.footerScripts).length;
+    return this.footerScripts && 0 < Object.keys(this.footerScripts).length;
   }
   public hasCss(): boolean {
-    return 0 < Object.keys(this.css).length;
+    return this.css && 0 < Object.keys(this.css).length;
   }
 }
