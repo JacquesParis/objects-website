@@ -1,4 +1,3 @@
-import {values} from 'lodash-es';
 import {AjaxResult} from './ajax-result';
 import {IObjectTree, IObjectNode} from '@jacquesparis/objects-model';
 
@@ -20,10 +19,21 @@ export abstract class GenericObjectComponent {
   protected objectTreeService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>};
   protected objectNodeService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>};
 
+  protected hrefBuilder: {
+    getPageHref: (page: IObjectTree) => string;
+
+    getAdminHref: (page: IObjectTree) => string;
+  };
+
   constructor(protected factory: new () => GenericObjectComponent) {}
   public abstract async init(
     objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
+    hrefBuilder: {
+      getPageHref: (page: IObjectTree) => string;
+
+      getAdminHref: (page: IObjectTree) => string;
+    },
     siteTreeId: string,
     pageTreeId?: string,
     dataTreeId?: string,
@@ -44,6 +54,7 @@ export abstract class GenericObjectComponent {
     await ajaxGeneratedResult.init(
       this.objectTreeService,
       this.objectNodeService,
+      this.hrefBuilder,
       this.siteTree.id,
       this.pageTree.id,
       dataTree.id,
@@ -64,20 +75,11 @@ export abstract class GenericObjectComponent {
   }
 
   public getPageHref(page: IObjectTree): string {
-    return '#/view/' + this.siteTree.id + '/' + (page ? page.treeNode.id : 'default');
+    return this.hrefBuilder.getPageHref(page);
   }
 
   public getAdminHref(page: IObjectTree): string {
-    return (
-      '#/admin/owner/' +
-      page.ownerType +
-      '/' +
-      page.ownerName +
-      '/namespace/' +
-      page.namespaceType +
-      '/' +
-      page.namespaceName
-    );
+    return this.hrefBuilder.getAdminHref(page);
   }
 
   public getImgSrc(controlValue: {base64?: string; type?: string; uri?: string}): string {
@@ -90,6 +92,14 @@ export abstract class GenericObjectComponent {
     return controlValue?.base64 && controlValue?.type
       ? "url('" + 'data:' + controlValue.type + ';base64,' + controlValue.base64 + "')"
       : "url('" + controlValue?.uri + "')";
+  }
+
+  protected values(obj: object): any[] {
+    const result = [];
+    for (const key in obj) {
+      result.push(obj[key]);
+    }
+    return result;
   }
 
   public getColSizes(
@@ -106,7 +116,7 @@ export abstract class GenericObjectComponent {
       xl: 1400,
     };
     const breakingSize =
-      'none' === breakSize ? sizes.xs : Math.min(...values(sizes).filter(size => size > sizes[breakSize]));
+      'none' === breakSize ? sizes.xs : Math.min(...this.values(sizes).filter(size => size > sizes[breakSize]));
     const returnedSizes: {
       xs?: number;
       sm?: number;

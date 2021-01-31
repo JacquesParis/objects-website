@@ -27,7 +27,6 @@
     "@jacquesparis/objects-model": "file:../objects-model",
     "@types/css": "0.0.31",
     "@types/mustache": "^4.1.1",
-    "lodash-es": "^4.17.15",
     "prettier": "^1.14.3",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
@@ -38,7 +37,6 @@
     "mustache": "^4.1.0"
   },
   "peerDependencies": {
-    "@jacquesparis/objects-client": "0.0.1-SNAPSHOT.2",
-    "lodash-es": "^4.17.15"
+    "@jacquesparis/objects-client": "0.0.1-SNAPSHOT.2"
   }
 }

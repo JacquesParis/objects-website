@@ -12,6 +12,11 @@ export class AjaxGeneratedResult extends GenericObjectComponent {
   public async init(
     objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
+    hrefBuilder: {
+      getPageHref: (page: IObjectTree) => string;
+
+      getAdminHref: (page: IObjectTree) => string;
+    },
     siteTreeId: string,
     pageTreeId?: string,
     dataTreeId?: string,
@@ -19,6 +24,7 @@ export class AjaxGeneratedResult extends GenericObjectComponent {
   ): Promise<void> {
     this.objectTreeService = objectTreesService;
     this.objectNodeService = objectNodesService;
+    this.hrefBuilder = hrefBuilder;
     await this.initObject(siteTreeId, pageTreeId, dataTreeId, templateTreeId);
   }
   public async initObject(
@@ -54,7 +60,6 @@ export class AjaxGeneratedResult extends GenericObjectComponent {
     this.templateTree = await this.getObjectTree(templateTreeId);
 
     this.templateNode = await this.getObjectNode(this.templateTree.treeNode.id);
-    console.log('init', this.dataNode.name, 'with', this.templateNode.name);
   }
 
   public async generate(): Promise<AjaxResult> {

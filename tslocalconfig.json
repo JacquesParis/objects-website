@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./out",
-    "sourceMap": false,
+    "sourceMap": true,
     "moduleResolution": "node",
     "target": "es5"
   }

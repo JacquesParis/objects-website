@@ -1,17 +1,25 @@
-import {values} from 'lodash-es';
 export class AjaxResult {
   public headerScripts: {[scriptId: string]: string} = {};
   public footerScripts: {[scriptId: string]: string} = {};
   public css: {[cssId: string]: string} = {};
   public body = '';
+
+  protected values(obj: object): any[] {
+    const result = [];
+    for (const key in obj) {
+      result.push(obj[key]);
+    }
+    return result;
+  }
+
   public headerScriptsArray() {
-    return values(this.headerScripts);
+    return this.values(this.headerScripts);
   }
   public footerScriptsArray() {
-    return values(this.footerScripts);
+    return this.values(this.footerScripts);
   }
   public cssArray() {
-    return values(this.css);
+    return this.values(this.css);
   }
   public hasHeaderScripts(): boolean {
     return this.headerScripts && 0 < Object.keys(this.headerScripts).length;

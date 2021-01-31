@@ -11,6 +11,11 @@ export class WebsiteGenerationService {
   public async getAjaxContent(
     objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
+    hrefBuilder: {
+      getPageHref: (page: IObjectTree) => string;
+
+      getAdminHref: (page: IObjectTree) => string;
+    },
     siteTreeId: string,
     pageTreeId?: string,
     dataTreeId?: string,
@@ -22,6 +27,7 @@ export class WebsiteGenerationService {
       await genericObject.init(
         objectTreesService,
         objectNodesService,
+        hrefBuilder,
         siteTreeId,
         pageTreeId,
         dataTreeId,
@@ -37,6 +43,11 @@ export class WebsiteGenerationService {
   public async getTamplateContent(
     objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
+    hrefBuilder: {
+      getPageHref: (page: IObjectTree) => string;
+
+      getAdminHref: (page: IObjectTree) => string;
+    },
     siteTreeId: string,
     pageTreeId?: string,
     dataTreeId?: string,
@@ -45,6 +56,7 @@ export class WebsiteGenerationService {
     const ajaxResult: AjaxResult = await this.getAjaxContent(
       objectTreesService,
       objectNodesService,
+      hrefBuilder,
       siteTreeId,
       pageTreeId,
       dataTreeId,
