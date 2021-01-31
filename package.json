@@ -1,6 +1,6 @@
 {
   "name": "@jacquesparis/objects-website",
-  "version": "0.0.1-SNAPSHOT.1",
+  "version": "1.0.10",
   "description": "site generation class",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,10 +9,10 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags",
+    "postversion": "git push -f && git push --tags",
     "dev": "npm uninstall @jacquesparis/objects-client @jacquesparis/objects-model && npm install --save-dev ../objects-client ../objects-model",
     "update": "npm uninstall @jacquesparis/objects-client @jacquesparis/objects-model && npm install --save-dev @jacquesparis/objects-client @jacquesparis/objects-model",
-    "lib": "npm run update && npm run build && git add -A && git commit -am \"lib\" && git push origin -f HEAD && npm publish --access=public",
+    "lib": "npm run update && npm run build && git add -A && git commit --amend --no-edit && git push -f origin HEAD && npm publish --access=public",
     "test": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
     "coverage": "nyc -r text -e .ts -x \"tests/*.test.ts\" npm run test"
   },
@@ -23,14 +23,14 @@
   },
   "homepage": "https://github.com/JacquesParis/objects-website#readme",
   "devDependencies": {
-    "@jacquesparis/objects-client": "file:../objects-client",
-    "@jacquesparis/objects-model": "file:../objects-model",
+    "@jacquesparis/objects-client": "^1.0.12",
+    "@jacquesparis/objects-model": "^1.0.8",
+    "@types/css": "0.0.31",
+    "@types/mustache": "^4.1.1",
     "prettier": "^1.14.3",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
-    "typescript": "^3.1.5",
-    "@types/css": "0.0.31",
-    "@types/mustache": "^4.1.1"
+    "typescript": "^3.1.5"
   },
   "dependencies": {
     "css": "^3.0.0",
