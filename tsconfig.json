@@ -4,8 +4,7 @@
   // enabling the VSCode build tasks "tsc: build" and "tsc: watch".
   "compilerOptions": {
     "target": "es5", // Compatible with older browsers
-    "module": "esnext", // Compatible with both Node.js and browser
-    //"module": "umd",
+    "module": "commonjs",
     "moduleResolution": "node", // Tell tsc to look in node_modules for modules
     "sourceMap": true, // Creates *.js.map files
     "jsx": "react", // Causes inline XML (JSX code) to be expanded
