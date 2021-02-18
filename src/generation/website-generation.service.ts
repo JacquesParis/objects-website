@@ -8,6 +8,50 @@ export class WebsiteGenerationService {
   }
   private constructor() {}
 
+  public async loadStyle(url): Promise<boolean> {
+    if (document.querySelector('link[href="' + url + '"]')) {
+      return true;
+    }
+    return new Promise(resolve => {
+      const link = document.createElement('link');
+      link.setAttribute('href', url);
+      link.setAttribute('rel', 'stylesheet');
+      link.addEventListener(
+        'load',
+        () => {
+          window.setTimeout(() => {
+            resolve(true);
+          });
+        },
+        false,
+      );
+      document.head.appendChild(link);
+    });
+  }
+
+  public async loadScript(url): Promise<boolean> {
+    if (document.querySelector('script[src="' + url + '"]')) {
+      return true;
+    }
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.setAttribute('src', url);
+      script.setAttribute('type', 'text/javascript');
+
+      script.addEventListener(
+        'load',
+        () => {
+          window.setTimeout(() => {
+            resolve(true);
+          });
+        },
+        false,
+      );
+
+      document.head.appendChild(script);
+    });
+  }
+
   public async getAjaxContent(
     objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
@@ -44,8 +88,8 @@ export class WebsiteGenerationService {
     objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
     hrefBuilder: {
+      getServerUri: (uri: string) => string;
       getPageHref: (page: IObjectTree) => string;
-
       getAdminHref: (page: IObjectTree) => string;
     },
     siteTreeId: string,
@@ -53,6 +97,13 @@ export class WebsiteGenerationService {
     dataTreeId?: string,
     templateTreeId?: string,
   ): Promise<string> {
+    (window as any).loadScript = uri => {
+      return this.loadScript(hrefBuilder.getServerUri(uri));
+    };
+    (window as any).loadStyle = uri => {
+      return this.loadStyle(hrefBuilder.getServerUri(uri));
+    };
+
     const ajaxResult: AjaxResult = await this.getAjaxContent(
       objectTreesService,
       objectNodesService,
