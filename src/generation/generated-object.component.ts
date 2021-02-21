@@ -21,8 +21,8 @@ export abstract class GenericObjectComponent {
 
   protected hrefBuilder: {
     getPageHref: (page: IObjectTree) => string;
-
     getAdminHref: (page: IObjectTree) => string;
+    getPopupHref: (page: IObjectTree) => string;
   };
 
   constructor(protected factory: new () => GenericObjectComponent) {}
@@ -31,8 +31,8 @@ export abstract class GenericObjectComponent {
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
     hrefBuilder: {
       getPageHref: (page: IObjectTree) => string;
-
       getAdminHref: (page: IObjectTree) => string;
+      getPopupHref: (page: IObjectTree) => string;
     },
     siteTreeId: string,
     pageTreeId?: string,
@@ -80,6 +80,10 @@ export abstract class GenericObjectComponent {
 
   public getAdminHref(page: IObjectTree): string {
     return this.hrefBuilder.getAdminHref(page);
+  }
+
+  public getPopupHref(page: IObjectTree): string {
+    return this.hrefBuilder.getPopupHref(page);
   }
 
   public getImgSrc(controlValue: {base64?: string; type?: string; uri?: string}): string {

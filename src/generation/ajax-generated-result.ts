@@ -14,8 +14,8 @@ export class AjaxGeneratedResult extends GenericObjectComponent {
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
     hrefBuilder: {
       getPageHref: (page: IObjectTree) => string;
-
       getAdminHref: (page: IObjectTree) => string;
+      getPopupHref: (page: IObjectTree) => string;
     },
     siteTreeId: string,
     pageTreeId?: string,

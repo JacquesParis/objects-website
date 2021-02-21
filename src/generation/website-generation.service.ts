@@ -51,14 +51,59 @@ export class WebsiteGenerationService {
       document.head.appendChild(script);
     });
   }
+  private httpGetAsync(theUrl, callback) {
+    const xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = () => {
+      if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+        callback(xmlHttp.responseText);
+      }
+    };
+    xmlHttp.open('GET', theUrl, true); // true for asynchronous
+    xmlHttp.send(null);
+  }
+
+  public async loadJson(url): Promise<any> {
+    if ('loadJson_' + url in (window as any).loadedObjects) {
+      return (window as any).loadedObjects['loadJson_' + url];
+    }
+    return new Promise((resolve, reject) => {
+      this.httpGetAsync(url, response => {
+        (window as any).loadedObjects['loadJson_' + url] = JSON.parse(response);
+        resolve((window as any).loadedObjects['loadJson_' + url]);
+      });
+    });
+  }
+
+  public async loadPopup(uri): Promise<string> {
+    if ('loadPopup_' + uri in (window as any).loadedObjects) {
+      return (window as any).loadedObjects['loadPopup_' + uri];
+    }
+    const popupTemplate = await this.loadJson(uri);
+
+    let popup = popupTemplate.text;
+    for (const id in popupTemplate.uris) {
+      popup = popup.replace(
+        new RegExp(id, 'g'),
+        // eslint-disable-next-line no-undef
+        (window as any).getPageHref({
+          treeNode: {
+            id: popupTemplate.uris[id].pageId,
+            name: popupTemplate.uris[id].pageName,
+          },
+        }),
+      );
+    }
+    (window as any).loadedObjects['loadPopup_' + uri] = popup;
+    return popup;
+  }
 
   public async getAjaxContent(
     objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
     hrefBuilder: {
       getPageHref: (page: IObjectTree) => string;
-
       getAdminHref: (page: IObjectTree) => string;
+      getPopupHref: (page: IObjectTree) => string;
     },
     siteTreeId: string,
     pageTreeId?: string,
@@ -84,25 +129,48 @@ export class WebsiteGenerationService {
     return genericObject.generate();
   }
 
-  public async getTamplateContent(
+  public async getTemplateContent(
     objectTreesService: {getCachedOrRemoteObjectById: (treeId: string) => Promise<IObjectTree>},
     objectNodesService: {getCachedOrRemoteObjectById: (nodeId: string) => Promise<IObjectNode>},
     hrefBuilder: {
       getServerUri: (uri: string) => string;
       getPageHref: (page: IObjectTree) => string;
       getAdminHref: (page: IObjectTree) => string;
+      getPopupHref: (page: IObjectTree) => string;
     },
     siteTreeId: string,
     pageTreeId?: string,
     dataTreeId?: string,
     templateTreeId?: string,
   ): Promise<string> {
-    (window as any).loadScript = uri => {
-      return this.loadScript(hrefBuilder.getServerUri(uri));
-    };
-    (window as any).loadStyle = uri => {
-      return this.loadStyle(hrefBuilder.getServerUri(uri));
-    };
+    if (!(window as any).websiteInitialized) {
+      (window as any).websiteInitialized = true;
+      (window as any).loadedObjects = {};
+      (window as any).loadScript = (uri): Promise<boolean> => {
+        return this.loadScript(hrefBuilder.getServerUri(uri));
+      };
+      (window as any).loadStyle = (uri): Promise<boolean> => {
+        return this.loadStyle(hrefBuilder.getServerUri(uri));
+      };
+      (window as any).loadJson = (uri): Promise<any> => {
+        return this.loadJson(hrefBuilder.getServerUri(uri));
+      };
+      (window as any).loadPopup = (uri): Promise<string> => {
+        return this.loadPopup(hrefBuilder.getServerUri(uri));
+      };
+      (window as any).getPageHref = (page: IObjectTree): string => {
+        return hrefBuilder.getPageHref(page);
+      };
+      (window as any).getAdminHref = (page: IObjectTree): string => {
+        return hrefBuilder.getAdminHref(page);
+      };
+      (window as any).getPopupHref = (page: IObjectTree): string => {
+        return hrefBuilder.getPopupHref(page);
+      };
+      (window as any).getServerUri = (uri): string => {
+        return hrefBuilder.getServerUri(uri);
+      };
+    }
 
     const ajaxResult: AjaxResult = await this.getAjaxContent(
       objectTreesService,
