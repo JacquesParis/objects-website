@@ -1,6 +1,6 @@
 {
   "name": "@jacquesparis/objects-website",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "site generation class",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,7 +9,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags",
+    "postversion": "git push -f && git push --tags",
     "dev": "npm uninstall @jacquesparis/objects-client @jacquesparis/objects-model && npm install --save-dev ../objects-client ../objects-model",
     "update": "npm uninstall @jacquesparis/objects-client @jacquesparis/objects-model && npm install --save-dev @jacquesparis/objects-client @jacquesparis/objects-model",
     "lib": "npm run update && npm run build && git add -A && git commit --amend -m \"lib\" && git push -f origin HEAD && npm publish --access=public",
@@ -23,8 +23,8 @@
   },
   "homepage": "https://github.com/JacquesParis/objects-website#readme",
   "devDependencies": {
-    "@jacquesparis/objects-client": "^1.0.7",
-    "@jacquesparis/objects-model": "^1.0.4",
+    "@jacquesparis/objects-client": "^1.0.9",
+    "@jacquesparis/objects-model": "^1.0.7",
     "@types/css": "0.0.31",
     "@types/mustache": "^4.1.1",
     "prettier": "^1.14.3",
