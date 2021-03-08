@@ -1,6 +1,6 @@
 {
   "name": "@jacquesparis/objects-website",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "site generation class",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +24,7 @@
   "homepage": "https://github.com/JacquesParis/objects-website#readme",
   "devDependencies": {
     "@jacquesparis/objects-client": "^1.0.9",
-    "@jacquesparis/objects-model": "^1.0.7",
+    "@jacquesparis/objects-model": "^1.0.8",
     "@types/css": "0.0.31",
     "@types/mustache": "^4.1.1",
     "prettier": "^1.14.3",
