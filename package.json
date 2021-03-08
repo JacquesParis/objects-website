@@ -1,6 +1,6 @@
 {
   "name": "@jacquesparis/objects-website",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "site generation class",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
