@@ -31,16 +31,32 @@ export class WebsiteGenerationService {
 
   public async loadScript(url): Promise<boolean> {
     if (document.querySelector('script[src="' + url + '"]')) {
-      return true;
+      if ('true' === document.querySelector('script[src="' + url + '"]').getAttribute('data-loading')) {
+        return new Promise((resolve, reject) => {
+          document.querySelector('script[src="' + url + '"]').addEventListener(
+            'load',
+            () => {
+              window.setTimeout(() => {
+                resolve(true);
+              });
+            },
+            false,
+          );
+        });
+      } else {
+        return true;
+      }
     }
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.setAttribute('src', url);
       script.setAttribute('type', 'text/javascript');
+      script.setAttribute('data-loading', 'true');
 
       script.addEventListener(
         'load',
         () => {
+          document.querySelector('script[src="' + url + '"]').setAttribute('data-loading', 'false');
           window.setTimeout(() => {
             resolve(true);
           });
